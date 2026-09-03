@@ -1,10 +1,18 @@
 <template>
   <!-- Logo -->
-  <div class="svgclass">
+  <!--
+    variant="header" (por defecto): comportamiento ORIGINAL, sin cambios —
+      caja fija 250x160, zoom fijo x5 recortando al centro, pointer-events:none
+      (pensado para convivir apretado junto al menú).
+    variant="hero": tamaño fluido (width:100%), pensado para usarse suelto
+      dentro de una sección — se adapta al ancho del contenedor en vez de
+      tener un tamaño fijo en píxeles.
+  -->
+  <div :class="['svgclass', `svgclass--${variant}`]">
     <svg
       version="1.0"
       xmlns="http://www.w3.org/2000/svg"
-      class="logo"
+      :class="['logo', `logo--${variant}`]"
       viewBox="-250 0 2000.000000 2000.000000"
       preserveAspectRatio="xMidYMid meet"
     >
@@ -125,7 +133,7 @@
       <!-- Texto con estilo: tipografía redondeada, contorno y color institucional -->
       <text
         class="logo-text"
-        x="550"
+        x="530"
         y="1250"
         font-size="105"
         font-weight="800"
@@ -143,12 +151,17 @@
 </template>
 
 <script setup>
-import { useRouter } from "vue-router";
-
-const router = useRouter();
+defineProps({
+  // "header" = comportamiento original (compacto, recorte con zoom fijo).
+  // "hero"   = tamaño fluido, para usar suelto en una sección grande.
+  variant: {
+    type: String,
+    default: "header",
+  },
+});
 </script>
 
-<style>
+<style scoped>
 /* Tipografía redondeada y aventurera para el texto del logo */
 @import url("https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&display=swap");
 
@@ -156,14 +169,17 @@ const router = useRouter();
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  width: 200px;
-  height: 90px;
 }
 
-.logo {
+/* ── Variante "header": EXACTAMENTE el comportamiento original ── */
+.svgclass--header {
   width: 250px;
-  height: 250px;
+  height: 160px;
+  cursor: pointer;
+}
+.logo--header {
+  width: 250px;
+  height: 280px;
   transform: scale(5);
   margin-top: -22px;
   transition: transform 0.35s ease, filter 0.35s ease;
@@ -172,10 +188,23 @@ const router = useRouter();
      (como "volver") cuando el header se comprime en pantallas angostas. */
   pointer-events: none;
 }
-
-/* Efecto sutil al pasar el mouse: leve zoom + inclinación, sensación dinámica */
-.svgclass:hover .logo {
+.svgclass--header:hover .logo--header {
   transform: scale(2.08) rotate(-2deg);
+}
+
+/* ── Variante "hero": tamaño fluido, sin el recorte agresivo del header ──
+   Se adapta al ancho de su contenedor (útil dentro del hero, tarjetas,
+   footer, etc.) en vez de tener medidas fijas en píxeles. Ajusta el
+   max-width desde donde lo uses (ver .hero-logo en Home.vue) según el
+   espacio disponible. */
+.svgclass--hero {
+  width: 100%;
+}
+.logo--hero {
+  width: 100%;
+  height: auto;
+  display: block;
+  pointer-events: auto;
 }
 
 .logo-text {

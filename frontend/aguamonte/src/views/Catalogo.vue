@@ -19,9 +19,6 @@
         >
           AGUAMONTE
         </a> -->
-<div class="flex justify-center w-full ">
-  <Logo class="w-90 md:w-90 h-auto" />
-</div>
 
         <!-- Toggle Modo Edición (solo visible para admin) -->
         <div v-if="isAdmin" class="shrink-0">

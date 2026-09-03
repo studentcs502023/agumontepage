@@ -6,10 +6,7 @@
       @submit.prevent="onSubmit"
       class="w-full max-w-sm bg-surface-container-lowest border border-outline-variant p-8 rounded-2xl flex flex-col gap-5 shadow-lg"
     >
-      <div class="flex justify-center mb-2">
-        <Logo class="w-40 h-auto" />
-      </div>
-
+     
       <h1
         class="font-headline-lg-mobile text-headline-lg-mobile text-center text-primary"
       >
@@ -75,7 +72,6 @@
 <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
-import Logo from "../components/logo.vue";
 import { login } from "../api/servicios.js";
 
 const router = useRouter();
