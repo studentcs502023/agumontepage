@@ -3,8 +3,8 @@ import Product from "../models/Product.js";
 
 const router = Router();
 
-// GET /api/productos  -> listar todos
-router.get("/api/productos", async (req, res) => {
+// GET /api/productos -> listar todos
+router.get("/productos", async (req, res) => {
   try {
     const productos = await Product.find().sort({ createdAt: -1 });
     res.json(productos);
@@ -14,7 +14,7 @@ router.get("/api/productos", async (req, res) => {
 });
 
 // GET /api/productos/:id -> un producto
-router.get("/api/productos/:id", async (req, res) => {
+router.get("/productos/:id", async (req, res) => {
   try {
     const producto = await Product.findById(req.params.id);
     if (!producto) {
@@ -27,7 +27,7 @@ router.get("/api/productos/:id", async (req, res) => {
 });
 
 // POST /api/productos -> crear
-router.post("/api/productos", async (req, res) => {
+router.post("/productos", async (req, res) => {
   try {
     const { name } = req.body;
     if (!name || !name.trim()) {
@@ -41,7 +41,7 @@ router.post("/api/productos", async (req, res) => {
 });
 
 // PUT /api/productos/:id -> editar
-router.put("/api/productos/:id", async (req, res) => {
+router.put("/productos/:id", async (req, res) => {
   try {
     const producto = await Product.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
@@ -57,7 +57,7 @@ router.put("/api/productos/:id", async (req, res) => {
 });
 
 // DELETE /api/productos/:id -> eliminar
-router.delete("/api/productos/:id", async (req, res) => {
+router.delete("/productos/:id", async (req, res) => {
   try {
     const producto = await Product.findByIdAndDelete(req.params.id);
     if (!producto) {

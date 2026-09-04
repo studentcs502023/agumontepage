@@ -5,8 +5,9 @@ import Usuario from "../models/Usuario.js";
 
 const router = Router();
 
-// POST /api/auth/login -> iniciar sesión y devolver token JWT
-router.post("/api/auth/login", async (req, res) => {
+// Cambia "/auth/login" por "/login"
+// Como en app.js está montado en "/api/auth", la ruta final será /api/auth/login
+router.post("/login", async (req, res) => {
   try {
     const { nombre, password } = req.body;
 
@@ -16,7 +17,6 @@ router.post("/api/auth/login", async (req, res) => {
         .json({ error: "Nombre y contraseña son obligatorios." });
     }
 
-    // Se incluye el password porque el schema lo oculta por defecto
     const usuario = await Usuario.findOne({ nombre }).select("+password");
     if (!usuario) {
       return res.status(401).json({ error: "Credenciales inválidas." });

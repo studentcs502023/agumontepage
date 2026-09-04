@@ -20,19 +20,20 @@ const MONGO_URI =
   process.env.MONGODB_URI || "mongodb://localhost:27017/aguamonte";
 
 /* ── Middlewares base ── */
-// Se permite cualquier origen en desarrollo (el JWT viaja por header Authorization,
-// no por cookies, por lo que no se necesita credentials).
-app.use(cors());
+app.use(cors({
+  origin: '*', // Permitir peticiones desde cualquier origen
+}));
 app.use(express.json({ limit: "5mb" }));
 
 // Sirve las imágenes subidas desde /uploads/...
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-/* ── Rutas ── */
-app.use(uploadRouter);
-app.use(usuariosRouter);
-app.use(authRouter);
-app.use(productsRouter);
+/* ── Rutas montadas bajo /api ── */
+/* ── Rutas montadas ── */
+app.use("/api/auth", authRouter); // Especificas el prefijo /api/auth
+app.use("/api", uploadRouter);
+app.use("/api", usuariosRouter);
+app.use("/api", productsRouter);
 
 /* ── Ruta de prueba ── */
 app.get("/", (req, res) => {
