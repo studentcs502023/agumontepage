@@ -8,15 +8,17 @@ import bolsoImg from "../../images/chaleco naranaja diseño.jpeg";
 import chapalaImg from "../../images/chapala race.PNG";
 import diseñocamisaImg from "../../images/diseño camisa sublimada 2.jpeg";
 import bolsosdomicilios from "../../images/bolsos domicilios.jpeg";
-import logo1 from "../../images/nlogo1.png";
+// import logo1 from "../../images/nlogo1.png";
 import Header from "../components/Header.vue";
 import FooterComponent from "../components/footer.vue";
 import heroVideo from "../../images/hero.mp4";
 import mochila from "../../images/mochila deporte extremo.jpeg";
-import acuatico from "../../images/bolso rescate acuatico.jpeg";
-import chalecoNaranaja from "../../images/mercancia chaleco naranja.jpeg";
-import Botiquin from "../../images/bolso botiquin.jpeg";
-
+import acuatico from "../../images/cahqueta.jpeg";
+import BolsoR  from "../../images/bolos river.PNG";
+import salvavidas  from "../../images/chaleco naranja .jpeg";
+import chalecoNegro  from "../../images/chaleco negro.jpeg";
+import imagen from "../../images/logo_fono_balnco-.png";
+import logo from "../components/logo.vue";
 // Inicializar Quasar Screen detector
 const $q = useQuasar();
 const router = useRouter();
@@ -56,15 +58,15 @@ function viewDetails(product) {
 }
 
 const activities = ref([
-  { id: "act-1", name: "Rafting", subtitle: "Chalecos y seguridad", image: bolsoImg },
-  { id: "act-2", name: "Canotaje", subtitle: "Chapala Race", image: chapalaImg },
-  { id: "act-3", name: "Seguridad en el agua", subtitle: "Rescate acuático", image: acuatico },
+{ id: "act-1", name: "Canotaje", subtitle: "Chapala Race", image: chapalaImg },
+{ id: "act-2", name: "Bolso River ", subtitle: "Chaleco rafting", image: BolsoR  },
+  { id: "act-3", name: "Buzos a tu medida", subtitle: "Diseño", image: acuatico },
   { id: "act-4", name: "Personalizado / Sublimado", subtitle: "A tu medida", image: diseñocamisaImg },
   { id: "act-5", name: "Domicilios", subtitle: "Bolsos de entrega", image: bolsosdomicilios },
   { id: "act-6", name: "Outdoor", subtitle: "Deporte extremo", image: mochila },
-  { id: "act-7", name: "Chalecos", subtitle: "Producción Aguamonte", image: chalecoNaranaja },
-  { id: "act-8", name: "Botiquín", subtitle: "Producción Aguamonte", image: Botiquin },
-]);
+  { id: "act-7", name: "Chaleco", subtitle: "Bolsos de seguridad", image: chalecoNegro },
+{ id: "act-8", name: " Chaleco", subtitle: "chalecos de seguridad", image:  salvavidas },
+]); 
 
 const products = ref([
   {
@@ -137,7 +139,10 @@ const products = ref([
         </div>
 
         <div class="hero-text-col">
-          <img :src="logo1" alt="Aguamonte" class="hero-video-logo" />
+      <div v-if="$q.screen.width > 600" class="hero-video-logo">
+<logo/>
+</div>
+          <!-- <img :src="logo" alt="Aguamonte" class="hero-video-logo" /> -->
           <span class="hero-eyebrow">Confección técnica para el agua</span>
           <h1 class="heading-hero">Equipamiento que resiste la corriente</h1>
           <p class="hero-subtitle">
@@ -152,7 +157,7 @@ const products = ref([
     <!-- ═══════ EXPLORA POR ACTIVIDAD ═══════ -->
     <section class="activity-section">
       <h2 class="heading-section text-center q-mb-lg">Explora por actividad</h2>
-
+   
       <!-- CAROUSEL (Móvil / Pantallas pequeñas) -->
       <div v-if="$q.screen.lt.md" class="q-pa-md flex justify-center">
         <q-carousel
@@ -414,9 +419,7 @@ const products = ref([
   margin-right: auto;
 }
 
-.hero-video-logo {
-  display: none;
-}
+
 
 .hero-cta {
   margin-top: 1.5rem;
@@ -452,6 +455,14 @@ const products = ref([
     padding: 4rem 1.5rem;
   }
 
+.hero-video-logo {
+  display: flex;
+flex-direction: column;
+height: 150px;
+width: 200px;
+
+}
+
   .hero-grid {
     display: grid;
     grid-template-columns: 1.1fr 0.9fr;
@@ -486,11 +497,6 @@ const products = ref([
     margin-right: 0;
   }
 
-  .hero-video-logo {
-    width: 400px;
-    height: 100px;
-    margin: 0 0 0.85rem;
-  }
 
   .hero-cta {
     background: #3053a1;
@@ -524,7 +530,7 @@ const products = ref([
 .activity-section {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem 1rem;
+  padding: 0rem 0rem;
   background: #ffffff;
 }
 
@@ -545,7 +551,7 @@ const products = ref([
 
 .activity-card__img-wrapper--carousel {
   width: 100%;
-  aspect-ratio: 4 / 3;
+aspect-ratio: 4 / 3;
   overflow: hidden;
   border-radius: 0.5rem;
   background: #f4f4ef;

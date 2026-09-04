@@ -1,13 +1,5 @@
 <template>
-  <!-- Logo -->
-  <!--
-    variant="header" (por defecto): comportamiento ORIGINAL, sin cambios —
-      caja fija 250x160, zoom fijo x5 recortando al centro, pointer-events:none
-      (pensado para convivir apretado junto al menú).
-    variant="hero": tamaño fluido (width:100%), pensado para usarse suelto
-      dentro de una sección — se adapta al ancho del contenedor en vez de
-      tener un tamaño fijo en píxeles.
-  -->
+  <!-- Logo Textil Monocromático -->
   <div :class="['svgclass', `svgclass--${variant}`]">
     <svg
       version="1.0"
@@ -16,28 +8,12 @@
       viewBox="-250 0 2000.000000 2000.000000"
       preserveAspectRatio="xMidYMid meet"
     >
-      <defs>
-        <!-- Degradado con la paleta institucional de Aguamonte -->
-        <linearGradient id="aguamonteLogoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" style="stop-color: var(--color-institucional-verde-claro, #9AC6B5);" />
-          <stop offset="35%" style="stop-color: var(--color-institucional-turquesa, #4EA8A9);" />
-          <stop offset="70%" style="stop-color: var(--color-institucional-mostaza, #DE8D31);" />
-          <stop offset="100%" style="stop-color: var(--color-institucional-naranja, #C45214);" />
-        </linearGradient>
-
-        <!-- Sombra suave para dar profundidad -->
-        <filter id="logoSombra" x="-20%" y="-20%" width="140%" height="140%">
-          <feDropShadow dx="0" dy="10" stdDeviation="14" flood-color="#542A1B" flood-opacity="0.25" />
-        </filter>
-      </defs>
-
       <g
         transform="translate(0.000000,2000.000000) scale(0.100000,-0.100000)"
-        fill="url(#aguamonteLogoGradient)"
+        class="textil-fill"
         stroke="none"
-        filter="url(#logoSombra)"
       >
-        <!-- Trazos originales del logo, ahora con degradado institucional -->
+        <!-- Trazos originales del logo -->
         <path
           d="M2893 10878 c-21 -23 -33 -45 -118 -203 -26 -49 -71 -133 -100 -185
 -29 -52 -76 -140 -105 -195 -30 -55 -64 -118 -77 -140 -12 -22 -35 -65 -49
@@ -130,19 +106,14 @@
         />
       </g>
 
-      <!-- Texto con estilo: tipografía redondeada, contorno y color institucional -->
+      <!-- Texto del logo original con un color sólido -->
       <text
         class="logo-text"
         x="530"
         y="1250"
-        font-size="105"
+        font-size="95"
         font-weight="800"
         letter-spacing="4"
-        fill="var(--color-institucional-marron-oscuro, #542A1B)"
-        stroke="#FFFFFF"
-        stroke-width="7"
-        paint-order="stroke fill"
-        stroke-linejoin="round"
       >
         ¡Corre, lucha, sobrevive!
       </text>
@@ -152,8 +123,6 @@
 
 <script setup>
 defineProps({
-  // "header" = comportamiento original (compacto, recorte con zoom fijo).
-  // "hero"   = tamaño fluido, para usar suelto en una sección grande.
   variant: {
     type: String,
     default: "header",
@@ -162,52 +131,22 @@ defineProps({
 </script>
 
 <style scoped>
-/* Tipografía redondeada y aventurera para el texto del logo */
 @import url("https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&display=swap");
 
-.svgclass {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+:root {
+  /* Si necesitas cambiar el color del logo (ej. a blanco o azul marino), cambia este valor */
+  --color-textil: #1A1A1A; 
 }
 
-/* ── Variante "header": EXACTAMENTE el comportamiento original ── */
-.svgclass--header {
-  width: 250px;
-  height: 160px;
-  cursor: pointer;
-}
-.logo--header {
-  width: 250px;
-  height: 280px;
-  transform: scale(5);
-  margin-top: -22px;
-  transition: transform 0.35s ease, filter 0.35s ease;
-  /* El transform pinta el logo más grande que su caja de layout real;
-     sin esto, esa zona "extra" pintada intercepta clics de botones vecinos
-     (como "volver") cuando el header se comprime en pantallas angostas. */
-  pointer-events: none;
-}
-.svgclass--header:hover .logo--header {
-  transform: scale(2.08) rotate(-2deg);
-}
 
-/* ── Variante "hero": tamaño fluido, sin el recorte agresivo del header ──
-   Se adapta al ancho de su contenedor (útil dentro del hero, tarjetas,
-   footer, etc.) en vez de tener medidas fijas en píxeles. Ajusta el
-   max-width desde donde lo uses (ver .hero-logo en Home.vue) según el
-   espacio disponible. */
-.svgclass--hero {
-  width: 100%;
-}
-.logo--hero {
-  width: 100%;
-  height: auto;
-  display: block;
-  pointer-events: auto;
+/* Relleno plano sin degradados para que sea fácil de estampar o bordar */
+.textil-fill {
+  fill: var(--color-textil);
 }
 
 .logo-text {
   font-family: "Baloo 2", "Arial", sans-serif;
+  fill: var(--color-textil);
 }
+
 </style>
