@@ -47,7 +47,7 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { login } from "../api/servicios.js";
 
-const router = Router();
+const router = useRouter();
 
 const nombre = ref("");
 const password = ref("");

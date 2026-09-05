@@ -25,49 +25,89 @@
     <!-- Main Content Canvas -->
     <main id="contenedorMain" class="catalog-content">
       <!-- Header Section -->
-      <section class="sectionUno">
-        <h1 class="catalog-title">
-          <span>Productos Textiles</span>
-        </h1>
-        <p class="catalog-subtitle">
-          Explora nuestra gama de equipos de seguridad <br />
-          y personalizables para rafting, canotaje y deportes extremos.
-          <br />Diseñados con precisión técnica e ingeniería textil.
-        </p>
-      </section>
+
+<section class="banner-container">
+  <!-- Contenedor del Banner -->
+  <div 
+    class="banner-card" 
+    :style="{ backgroundImage: `url(${fondo})` }"
+  >
+    <!-- Badge flotante (arriba a la derecha) -->
+    <div class="sale-badge">
+      <span class="badge-sub">END-OF-SUMMER</span>
+      <span class="badge-title">SALE</span>
+    </div>
+  </div>
+
+  <!-- Texto inferior centrado -->
+  <div class="banner-description">
+    <p>
+     Ropa y accesorios técnicos de alto rendimiento diseñados para rafting,
+ hiking y deportes extremos. prendas sublimación de alta calidad, garantizando colores vibrantes,
+ durabilidad superior y personalización total para marcas, parques de aventura y deportistas. 
+    </p>
+
+  </div>
+</section>
+
 
       <!-- Filters Section -->
       <section class="filters-section">
-        <div class="filter-group">
-          <label class="filter-label">Categoría</label>
-          <select v-model="filters.category" class="filter-select">
-            <option value="">Todas las Categorías</option>
-            <option value="chalecos">Chalecos</option>
-            <option value="camisas">Camisas</option>
-            <option value="bolsos">Bolsos</option>
-          </select>
-        </div>
+  <!-- Buscador con Botón (Visible solo en < 768px) -->
+  <div class="search-mobile-wrapper">
+    <div class="search-box">
+      <q-input
+        v-model="searchTerm"
+        placeholder="Buscar producto (ej. chaleco)..."
+        dense
+        outlined
+        clearable
+        @clear="limpiarBusqueda"
+        @keyup.enter="ejecutarBusqueda"
+        class="search-input"
+      />
+      <q-btn
+        color="primary"
+        icon="search"
+        label="Buscar"
+        unelevated
+        @click="ejecutarBusqueda"
+        class="search-btn"
+      />
+    </div>
+  </div>
 
-        <div class="filter-group">
-          <label class="filter-label">Actividad</label>
-          <select v-model="filters.activity" class="filter-select">
-            <option value="">Todas las Actividades</option>
-            <option value="rafting">Rafting</option>
-            <option value="pesca">Pesca</option>
-            <option value="corporativo">Corporativo</option>
-          </select>
-        </div>
+<div class="group-filter">
+  <div class="filter-group">
+    <label class="filter-label">Categoría</label>
+    <select v-model="filters.category" class="filter-select">
+      <option value="">Todas las Categorías</option>
+      <option value="chalecos">Chalecos</option>
+      <option value="camisas">Camisas</option>
+      <option value="bolsos">Bolsos</option>
+    </select>
+  </div>
 
-        <div class="filter-group">
-          <label class="filter-label">Personalización</label>
-          <select v-model="filters.customization" class="filter-select">
-            <option value="">Cualquier tipo</option>
-            <option value="sublimado">Sublimado</option>
-            <option value="bordado">Bordado</option>
-          </select>
-        </div>
-      </section>
+  <div class="filter-group">
+    <label class="filter-label">Actividad</label>
+    <select v-model="filters.activity" class="filter-select">
+      <option value="">Todas las Actividades</option>
+      <option value="rafting">Rafting</option>
+      <option value="pesca">Pesca</option>
+      <option value="corporativo">Corporativo</option>
+    </select>
+  </div>
 
+  <div class="filter-group">
+    <label class="filter-label">Personalización</label>
+    <select v-model="filters.customization" class="filter-select">
+      <option value="">Cualquier tipo</option>
+      <option value="sublimado">Sublimado</option>
+      <option value="bordado">Bordado</option>
+    </select>
+  </div>
+</div>
+</section>
       <!-- Barra de administración -->
       <section v-if="adminMode" class="admin-actions-bar">
         <button @click="openNewProductEditor" class="btn-add-product">
@@ -376,7 +416,10 @@ import FooterComponent from "../components/footer.vue";
 import { cargarProductos, guardarProducto, borrarProducto } from "../utils/productos.js";
 import { subirImagen } from "../api/servicios.js";
 import { urlImagen } from "../utils/imagen.js";
+import fondo from "../../images/hero-rafting.jpg";
+import { QInput } from 'quasar';
 
+// WhatsApp
 const phone = "573204877288";
 const message = encodeURIComponent("Hola, estoy interesado en los productos de Aguamonte.");
 
@@ -389,9 +432,15 @@ function abrirWhatsApp() {
   }
 }
 
+// Router
 const router = useRouter();
 const route = useRoute();
 
+function volverHome() {
+  router.push("/");
+}
+
+// Estado Admin y Modales
 const isAdmin = computed(() => route.query.admin === "true");
 const selectedProduct = ref(null);
 const adminMode = ref(false);
@@ -400,11 +449,63 @@ function closeModal() {
   selectedProduct.value = null;
 }
 
+// Búsqueda y Filtros
+const searchTerm = ref("");
+const searchQuery = ref("");
+
+function ejecutarBusqueda() {
+  searchQuery.value = searchTerm.value.trim();
+}
+
+function limpiarBusqueda() {
+  searchTerm.value = "";
+  searchQuery.value = "";
+}
+
+const filters = reactive({
+  category: "",
+  activity: "",
+  customization: "",
+});
+
+// Carga de Productos
+const products = ref([]);
+
+onMounted(async () => {
+  products.value = await cargarProductos();
+});
+
+// Filtro Unificado (Búsqueda + Categorías)
+const filteredProducts = computed(() => {
+  return products.value.filter((product) => {
+    // Filtro por texto de búsqueda
+    if (
+      searchQuery.value &&
+      !product.name?.toLowerCase().includes(searchQuery.value.toLowerCase())
+    ) {
+      return false;
+    }
+    // Filtros por selección
+    if (filters.category && product.category !== filters.category) return false;
+    if (filters.activity && product.activity !== filters.activity) return false;
+    if (filters.customization && product.customization !== filters.customization) return false;
+    
+    return true;
+  });
+});
+
+// Paginación
 const currentPage = ref(1);
 const itemsPerPage = ref(4);
 
 const totalPages = computed(() => {
   return Math.ceil(filteredProducts.value.length / itemsPerPage.value) || 1;
+});
+
+const paginatedProducts = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage.value;
+  const end = start + itemsPerPage.value;
+  return filteredProducts.value.slice(start, end);
 });
 
 function prevPage() {
@@ -415,51 +516,12 @@ function nextPage() {
   if (currentPage.value < totalPages.value) currentPage.value++;
 }
 
-function volverHome() {
-  router.push("/");
-}
-
-const filters = reactive({
-  category: "",
-  activity: "",
-  customization: "",
-});
-
-const products = ref([]);
-
-onMounted(async () => {
-  products.value = await cargarProductos();
-});
-
-const filteredProducts = computed(() => {
-  return products.value.filter((product) => {
-    if (filters.category && product.category !== filters.category) return false;
-    if (filters.activity && product.activity !== filters.activity) return false;
-    if (filters.customization && product.customization !== filters.customization) return false;
-    return true;
-  });
-});
-
-const paginatedProducts = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage.value;
-  const end = start + itemsPerPage.value;
-  return filteredProducts.value.slice(start, end);
-});
-
-watch(filters, () => {
+// Reset de página al filtrar o buscar
+watch([searchQuery, filters], () => {
   currentPage.value = 1;
 });
 
-const viewDetails = (product) => {
-  selectedProduct.value = product;
-};
-
-function labelDe(opciones, valor) {
-  if (!valor) return "—";
-  const opcion = opciones.find((o) => o.value === valor);
-  return opcion ? opcion.label : valor;
-}
-
+// Opciones de configuración / Selects
 const categoryOptions = [
   { value: "chalecos", label: "Chalecos" },
   { value: "camisas", label: "Camisas" },
@@ -484,6 +546,17 @@ const tagClassOptions = [
   { value: "text-primary-fixed-dim", label: "Primario Oscuro (Corporativo)" },
 ];
 
+function labelDe(opciones, valor) {
+  if (!valor) return "—";
+  const opcion = opciones.find((o) => o.value === valor);
+  return opcion ? opcion.label : valor;
+}
+
+const viewDetails = (product) => {
+  selectedProduct.value = product;
+};
+
+// CRUD Admin
 const editingProduct = ref(null);
 const isNewProduct = ref(false);
 
@@ -582,6 +655,41 @@ async function confirmDelete(product) {
   box-sizing: border-box;
 }
 
+
+/* ==========================================================================
+   Hero Banner / Section Uno
+   ========================================================================== */
+.hero-banner {
+  position: relative;
+  width: 100%;
+  min-height: 480px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1.5rem;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+}
+
+
+
+/* Ajustes para pantallas pequeñas */
+@media (max-width: 768px) {
+  .hero-banner {
+    min-height: 380px;
+    padding: 2rem 1rem;
+  }
+
+  .hero-title {
+    font-size: 1.8rem;
+  }
+
+  .hero-subtitle {
+    font-size: 0.95rem;
+  }
+}
+
 /* Layout General */
 .catalog-main-container {
   display: flex;
@@ -657,23 +765,101 @@ async function confirmDelete(product) {
 }
 
 /* Header Section */
-.sectionUno {
+/* Contenedor principal para centrar el bloque */
+.banner-container {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+/* Tarjeta del Banner */
+.banner-card {
   position: relative;
+  width: 100%;
+  /* Proporción panorámica (aprox 3.5:1 como en la imagen) */
+  aspect-ratio: 7 / 2; 
+  border-radius: 12px;
+  overflow: hidden;
+
+  /* Propiedades de imagen de fondo */
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-color: #e5e7eb;
+}
+
+/* Insignia / Badge Flotante */
+.sale-badge {
+  position: absolute;
+  top: 10%;
+  right: 5%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 2.5rem 1rem 3rem;
-  border-radius: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
   overflow: hidden;
-  background: linear-gradient(135deg, rgba(78, 168, 169, 0.08) 0%, rgba(242, 227, 198, 0.5) 100%);
 }
 
-.sectionUno::before {
-  content: "";
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, #9ac6b5 0%, #4ea8a9 25%, #de8d31 50%, #c45214 75%, #542a1b 100%);
+/* Parte superior del Badge (Azul) */
+.badge-sub {
+  background-color: #0b5c8f;
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 6px 16px;
+  width: 100%;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+/* Parte inferior del Badge (Verde lima) */
+.badge-title {
+  background-color: #8cc63f;
+  color: #ffffff;
+  font-size: 2.2rem;
+  font-weight: 900;
+  line-height: 1;
+  padding: 10px 24px;
+  width: 100%;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+/* Texto de descripción inferior */
+.banner-description {
+  margin-top: 24px;
+  text-align: center;
+}
+
+.banner-description p {
+  max-width: 650px;
+  margin: 0 auto;
+  color: #4a5568;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  font-family: sans-serif;
+}
+
+/* Adaptación Responsive para pantallas pequeñas */
+@media (max-width: 768px) {
+  .banner-card {
+    /* Ajusta la altura en móviles para que los elementos interiores encajen mejor */
+    aspect-ratio: 12 / 9; 
+  }
+
+  .badge-sub {
+    font-size: 0.75rem;
+    padding: 4px 10px;
+  }
+
+  .badge-title {
+    font-size: 1.5rem;
+    padding: 6px 14px;
+  }
 }
 
 .catalog-title {
@@ -708,43 +894,44 @@ async function confirmDelete(product) {
   line-height: 1.6;
 }
 
-/* Filters */
-.filters-section {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+/* Oculto por defecto en escritorio */
+.search-mobile-wrapper {
+  display: none;
   width: 100%;
-  border-top: 1px solid var(--color-outline-variant, #e4d3bd);
-  border-bottom: 1px solid var(--color-outline-variant, #e4d3bd);
-  padding: 1rem 0;
+  margin-bottom: 16px;
+
 }
 
-.filter-group {
+/* Formato flexible para alinear el input y el botón */
+.search-box {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.search-input {
   flex: 1;
 }
 
-.filter-label {
-  display: block;
-  font-size: 0.75rem;
-  color: #784128;
-  margin-bottom: 0.25rem;
-  text-transform: uppercase;
-  font-weight: 600;
+.search-btn {
+  height: 40px;
 }
 
-.filter-select {
-  width: 100%;
-  background: transparent;
-  border: none;
-  border-bottom: 1px solid var(--color-outline-variant, #e4d3bd);
-  color: #542a1b;
-  padding: 0.5rem 0;
-  font-size: 0.95rem;
-  outline: none;
+/* Muestra el buscador únicamente en móviles / pantallas menores a 768px */
+@media (max-width: 767px) {
+  .search-mobile-wrapper {
+    display: block;
+  }
 }
 
-.filter-select:focus {
-  border-bottom-color: var(--color-primary, #4ea8a9);
+.group-filter {
+  display: none;
+}
+
+@media (min-width: 767px) {
+  .group-filter {
+    display: block;
+  }
 }
 
 /* Admin Bar */
@@ -1256,10 +1443,56 @@ async function confirmDelete(product) {
 .text-primary-fixed-dim { color: var(--color-institucional-marron-oscuro, #542a1b) !important; }
 
 /* Media Queries (Responsive) */
-@media (min-width: 640px) {
+@media (min-width: 769px) {
   .filters-section {
     flex-direction: row;
   }
+
+/* Contenedor del grupo de filtro */
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+/* Etiqueta del filtro */
+.filter-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #374151;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Selector dropdown */
+.filter-select {
+  width: 100%;
+  padding: 10px 14px;
+  font-size: 0.95rem;
+  color: #1f2937;
+  background-color: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  outline: none;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  appearance: none; /* Elimina la flecha por defecto del navegador */
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%3c6b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+}
+
+/* Estados de interacción */
+.filter-select:hover {
+  border-color: #9ca3af;
+}
+
+.filter-select:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
   .product-grid {
     grid-template-columns: repeat(2, 1fr);
   }
